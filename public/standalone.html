@@ -185,11 +185,10 @@
     initCombat(state);
     let lastT = performance.now();
     d3.timer((now)=>{
-      const dt = now - lastT;
-      if (dt < 1000/CONFIG.fpsLimit) return;
+      const dt = (now-lastT)/1000;
       lastT = now;
       state.elapsed = now/1000;
-      const combatEvents = combatStep(state, dt/1000);
+      const combatEvents = combatStep(state, dt);
       combatEvents.forEach(e => handleEvent(e));
       updateLanes();
       updateHud();
