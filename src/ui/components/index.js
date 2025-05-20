@@ -1,0 +1,3 @@
+// GPT-GEN
+// Placeholder for reusable SVG widgets
+// ...existing code...

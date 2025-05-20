@@ -1,0 +1,72 @@
+/* Theme variables */
+:root {
+  --lane-bg: #181f2a;
+  --lane-accent: #3a8dde;
+  --lane-label: #fff;
+  --shield-bar: #3af2e2;
+  --hp-bar: #3a8dde;
+  --alpha-burst: #f2e23a;
+  --danger: #de3a3a;
+  --score-pill: #222c3a;
+  --score-pill-text: #fff;
+  --font-main: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+  background: #10141a;
+  color: #fff;
+  font-family: var(--font-main);
+  margin: 0;
+  padding: 0;
+}
+
+#arena {
+  display: block;
+  margin: 40px auto 0 auto;
+  background: var(--lane-bg);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px #0008;
+}
+
+.lane {
+  fill: var(--lane-bg);
+  stroke: var(--lane-accent);
+  stroke-width: 3;
+  rx: 24;
+  ry: 24;
+}
+
+.lane-label {
+  font-size: 1.2rem;
+  fill: var(--lane-label);
+  font-weight: bold;
+  dominant-baseline: middle;
+}
+
+.shield-bar {
+  fill: var(--shield-bar);
+  transition: width 0.3s cubic-bezier(.4,2,.6,1);
+}
+
+.hp-bar {
+  fill: var(--hp-bar);
+  transition: width 0.3s cubic-bezier(.4,2,.6,1);
+}
+
+.alpha-burst {
+  filter: drop-shadow(0 0 16px var(--alpha-burst));
+}
+
+.score-pill {
+  position: absolute;
+  top: 24px;
+  right: 48px;
+  background: var(--score-pill);
+  color: var(--score-pill-text);
+  border-radius: 32px;
+  padding: 8px 32px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  box-shadow: 0 2px 8px #0006;
+  z-index: 10;
+}

@@ -1,0 +1,3 @@
+// GPT-GEN
+// Placeholder for HUD elements (score pill, legend overlay, announcer)
+// ...existing code...
