@@ -90,6 +90,13 @@
         .attr('rx', CONFIG.hpBarH/2)
         .attr('fill', d=>d.colour)
         .attr('width', d=> hpToWidth(d.hp));
+      // player progress marker (race aspect)
+      lane.append('circle')
+        .attr('class', 'progressMarker')
+        .attr('cy', CONFIG.laneHeight / 2)
+        .attr('r', 18)
+        .attr('fill', d => d.colour)
+        .attr('cx', d => CONFIG.leftPad + (W - CONFIG.leftPad - CONFIG.laneGap) * (d.data?.alphaTheta ?? 0));
     }
     function updateLanes() {
       svg.selectAll('g.lane').data(state.players)
@@ -99,6 +106,10 @@
       svg.selectAll('g.lane').data(state.players)
         .select('rect.laneBg')
         .attr('fill', d=> d.hp < 20 ? '#4a0000' : CONFIG.bgColour);
+      svg.selectAll('g.lane').data(state.players)
+        .select('circle.progressMarker')
+        .transition().duration(120)
+        .attr('cx', d => CONFIG.leftPad + (W - CONFIG.leftPad - CONFIG.laneGap) * (d.data?.alphaTheta ?? 0));
     }
     function updateHud() {
       const status = document.getElementById('status');
@@ -199,6 +210,8 @@
         // flash damage text, play SFX.
       }
     }
+    drawLanes(); // Ensure lanes are drawn on load
+    startDemoFeed(); // Start the demo feed
   </script>
 </body>
 </html>

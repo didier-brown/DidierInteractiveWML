@@ -90,6 +90,14 @@ export function drawLanes(svg, state){
       .attr('fill', d=>d.colour)
       .attr('width', d=> hpToWidth(d.hp, W));
 
+  /* player progress marker (race aspect) */
+  lane.append('circle')
+    .attr('class', 'progressMarker')
+    .attr('cy', CONFIG.laneHeight / 2)
+    .attr('r', 18)
+    .attr('fill', d => d.colour)
+    .attr('cx', d => CONFIG.leftPad + (W - CONFIG.leftPad - CONFIG.laneGap) * (d.data?.alphaTheta ?? 0));
+
   /* helper for later width mapping */
   function hpToWidth(hp, fullWidth){
     const max = fullWidth - CONFIG.leftPad - CONFIG.laneGap;
@@ -117,6 +125,11 @@ export function updateLanes(svg, state){
   svg.selectAll('g.lane').data(state.players)
     .select('rect.laneBg')          // back-rect is first child, easier:
     .attr('fill', d=> d.hp < 20 ? '#4a0000' : CONFIG.bgColour);
+
+  svg.selectAll('g.lane').data(state.players)
+    .select('circle.progressMarker')
+    .transition().duration(120)
+    .attr('cx', d => CONFIG.leftPad + (svg.node().clientWidth - CONFIG.leftPad - CONFIG.laneGap) * (d.data?.alphaTheta ?? 0));
 }
 
 // Remove auto-render block to avoid double rendering
