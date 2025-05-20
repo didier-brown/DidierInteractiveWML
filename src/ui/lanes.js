@@ -119,16 +119,4 @@ export function updateLanes(svg, state){
     .attr('fill', d=> d.hp < 20 ? '#4a0000' : CONFIG.bgColour);
 }
 
-// Auto-render lanes on page load (dev only)
-if (typeof window !== 'undefined') {
-  window.addEventListener('DOMContentLoaded', () => {
-    const svg = d3.select('#arena');
-    const players = [
-      { id: 1, name: 'Player 1', colour: '#3a8dde' },
-      { id: 2, name: 'Player 2', colour: '#de3a8d' },
-      { id: 3, name: 'Player 3', colour: '#3ade8d' },
-      { id: 4, name: 'Player 4', colour: '#e2de3a' },
-    ];
-    drawLanes(svg, players);
-  });
-}
+// Remove auto-render block to avoid double rendering
