@@ -2,10 +2,7 @@
 // Manages individual player HUD elements like Alpha Burst indicators and Combo chains.
 // GPT-GEN
 
-import *_d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
-
-// Hack to make D3 available as d3 in this module
-const d3 = _d3;
+import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
 
 const HUD_CONFIG = {
   PLAYER_HUD_OFFSET_X: 50, // Horizontal offset for each player's HUD
