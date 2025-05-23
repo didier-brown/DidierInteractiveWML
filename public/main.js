@@ -25,44 +25,12 @@ const state = {
   // roundOver: false // Optional: if explicit state needed beyond event handling
 };
 
-const svg  = d3.select('#arena');
-let scoreboardContainer; // Declare scoreboardContainer
+// These variables will be initialized once DOM is loaded
+let svg;
+let scoreboardContainer;
+let announcer;
 
-resizeSvg(); // Initial resize
-window.addEventListener('resize', resizeSvg, { passive:true });
-
-drawLanes(svg, state);
-initCombat(state);              // right after defining state
-
-// Scoreboard initialization
-scoreboardContainer = svg.append('g')
-  .attr('class', 'scoreboard-container');
-// Positioning will be handled in resizeSvg initially and on resize events
-initScoreboard(scoreboardContainer, state.players);
-initHud(svg, state.players); // Initialize player HUD elements
-initLeaderboard(state.players); // Initialize leaderboard
-const announcer = new Announcer(svg, state.players); // Initialize announcer
-
-startDemoFeed();
-
-let lastT = performance.now();
-d3.timer((now)=>{
-  const dt = (now - lastT) / 1000; // Convert dt to seconds
-  if (dt < 1 / CONFIG.fpsLimit) return;
-  lastT = now;
-  state.elapsed += dt; // Increment elapsed time correctly
-
-  const combatEvents = combatStep(state, dt);
-  combatEvents.forEach(e => handleEvent(e));    // animate beams etc.
-
-  updateLanes(svg, state);
-  updateGlobalStatusDisplay(); // Renamed from updateHud
-  updateScoreboard(state.players, scoreboardContainer);
-  updatePlayerHud(state.players, combatEvents); // Update player HUD
-  announcer.update(state, combatEvents); // Update announcer
-  updateLeaderboard(state.players); // Update leaderboard
-});
-
+// Helper functions (can be defined before DOM is ready)
 function handleEvent(e){
   if(e.type === 'alphaBurst'){
     // TODO – emit SVG laser from e.source to e.target,
@@ -131,7 +99,8 @@ function resizeSvg(){
     scoreboardContainer.attr('transform', `translate(${newWidth - scoreboardWidth - scoreboardMargin.right}, ${scoreboardMargin.top})`);
   }
   // announcer might need repositioning too if it's not purely overlay
-  if (announcer && typeof announcer.reposition === 'function') {
+  // Ensure announcer is defined before trying to access its properties/methods
+  if (typeof announcer !== 'undefined' && announcer && typeof announcer.reposition === 'function') {
     announcer.reposition(newWidth, newHeight);
   }
 }
@@ -177,3 +146,45 @@ function updateGlobalStatusDisplay(){
 
 function rnd(mag){ return (Math.random() - 0.5) * mag * 2; }
 function clamp(v,a,b){ return Math.max(a, Math.min(v,b)); }
+
+// Main execution block after DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  svg = d3.select('#arena');
+  // scoreboardContainer will be initialized here as it depends on svg
+  // announcer will be initialized here as it depends on svg
+
+  resizeSvg(); // Initial resize
+  window.addEventListener('resize', resizeSvg, { passive:true });
+
+  drawLanes(svg, state);
+  initCombat(state);              // right after defining state
+
+  // Scoreboard initialization
+  scoreboardContainer = svg.append('g')
+    .attr('class', 'scoreboard-container');
+  // Positioning will be handled in resizeSvg initially and on resize events
+  initScoreboard(scoreboardContainer, state.players);
+  initHud(svg, state.players); // Initialize player HUD elements
+  initLeaderboard(state.players); // Initialize leaderboard
+  announcer = new Announcer(svg, state.players); // Initialize announcer
+
+  startDemoFeed();
+
+  let lastT = performance.now();
+  d3.timer((now)=>{
+    const dt = (now - lastT) / 1000; // Convert dt to seconds
+    if (dt < 1 / CONFIG.fpsLimit) return;
+    lastT = now;
+    state.elapsed += dt; // Increment elapsed time correctly
+
+    const combatEvents = combatStep(state, dt);
+    combatEvents.forEach(e => handleEvent(e));    // animate beams etc.
+
+    updateLanes(svg, state);
+    updateGlobalStatusDisplay(); // Renamed from updateHud
+    updateScoreboard(state.players, scoreboardContainer);
+    updatePlayerHud(state.players, combatEvents); // Update player HUD
+    announcer.update(state, combatEvents); // Update announcer
+    updateLeaderboard(state.players); // Update leaderboard
+  });
+});
