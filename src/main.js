@@ -5,6 +5,7 @@ import { drawLanes, updateLanes } from './ui/lanes.js';
 import { initCombat, combatStep, startNewRound }  from './combat.js';
 import { initScoreboard, updateScoreboard } from './ui/scoreboard.js';
 import { initHud, updateHud as updatePlayerHud } from './ui/hud.js'; // Player HUD import
+import { Announcer } from './announcer.js';
 
 const CONFIG = {
   fpsLimit : 60,
@@ -38,6 +39,10 @@ scoreboardContainer = svg.append('g')
 initScoreboard(scoreboardContainer, state.players);
 initHud(svg, state.players); // Initialize player HUD elements
 
+const announcer = new Announcer(svg, state.players);
+// To make history panel visible by default (optional, for testing)
+// announcer.toggleHistoryPanel(true);
+
 startDemoFeed();
 
 let lastT = performance.now();
@@ -70,6 +75,7 @@ d3.timer((now)=>{
   updateGlobalStatusDisplay(); // Renamed from updateHud
   updateScoreboard(state.players, scoreboardContainer);
   updatePlayerHud(state.players, combatEvents); // Update player HUD
+  announcer.update(state, combatEvents);
 });
 
 function handleEvent(e){
@@ -138,20 +144,59 @@ function resizeSvg(){
   // For now, updateLanes is called in the timer loop, which might be sufficient if it re-calculates positions.
 }
 
-function startDemoFeed(){
-  setInterval(()=>{
-    state.players.forEach(p=>{
-      const d = p.data;
-      d.alphaTheta = clamp(d.alphaTheta + rnd(CONFIG.changeMag), 0, 1);
-      d.focus      = clamp(d.focus      + rnd(CONFIG.changeMag*1.2), 0, 1);
-      d.mindWander = clamp(d.mindWander + rnd(CONFIG.changeMag*1.4), 0, 1);
-      p.hp = clamp(
-        p.hp + (d.focus * 0.4 - d.mindWander * 0.6) * 5,
-        0, 100
-      );
-    });
-    // TODO: call combat.step(state) here.
-  }, CONFIG.demoTickMs);
+function startDemoFeed() {
+    let eventCycle = 0; // Counter to cycle through mock events
+
+    setInterval(() => {
+        eventCycle++;
+
+        state.players.forEach((p, index) => {
+            const d = p.data;
+
+            // Default random walk
+            d.alphaTheta = clamp(d.alphaTheta + rnd(CONFIG.changeMag), 0, 1);
+            d.focus = clamp(d.focus + rnd(CONFIG.changeMag * 1.2), 0, 1);
+            d.mindWander = clamp(d.mindWander + rnd(CONFIG.changeMag * 1.4), 0, 1);
+
+            // --- Mock Event Triggers ---
+
+            // Scenario 1: Conditions for Alpha Burst / Focus Combo for Player 1
+            if (index === 0 && (eventCycle % 15 === 5)) { // Every ~15 cycles, try to boost P1
+                console.log("DEMO FEED: Boosting Player 1 for potential Alpha Burst/Combo");
+                d.alphaTheta = Math.min(1, d.alphaTheta + 0.3);
+                d.focus = Math.min(1, d.focus + 0.4);
+                d.mindWander = Math.max(0, d.mindWander - 0.3);
+            }
+
+            // Scenario 2: Engagement Drop for Player 2
+            if (index === 1 && (eventCycle % 20 === 10)) { // Every ~20 cycles, try to drop P2
+                console.log("DEMO FEED: Simulating Engagement Drop for Player 2");
+                d.alphaTheta = Math.max(0, d.alphaTheta - 0.5);
+                d.focus = Math.max(0, d.focus - 0.5);
+            }
+            
+            // Scenario 3: Player 1 HP boost (for potential leaderboard change if P2 was leading)
+            if (index === 0 && (eventCycle % 25 === 15)) {
+                if (state.players.length > 1 && state.players[1].hp > state.players[0].hp) { // If P2 is leading P1
+                     console.log("DEMO FEED: Boosting Player 1 HP for potential lead change");
+                     p.hp = clamp(p.hp + 30, 0, 100); // Give a noticeable HP boost
+                }
+            }
+            
+            // Scenario 4: Player 2 HP boost (for potential leaderboard change if P1 was leading)
+             if (index === 1 && (eventCycle % 25 === 20)) {
+                if (state.players.length > 1 && state.players[0].hp > state.players[1].hp) { // If P1 is leading P2
+                     console.log("DEMO FEED: Boosting Player 2 HP for potential lead change");
+                     p.hp = clamp(p.hp + 30, 0, 100); 
+                }
+            }
+        });
+
+        // HP is primarily changed by combat.js based on player data.
+        // The mock feed's role is to provide that data and, in specific cases, 
+        // directly alter HP for testing specific announcer events like leaderboard changes.
+
+    }, CONFIG.demoTickMs);
 }
 
 function updateGlobalStatusDisplay(){ // Renamed from updateHud
