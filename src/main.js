@@ -5,6 +5,7 @@ import { drawLanes, updateLanes } from './ui/lanes.js';
 import { initCombat, combatStep, startNewRound }  from './combat.js';
 import { initScoreboard, updateScoreboard } from './ui/scoreboard.js';
 import { initHud, updateHud as updatePlayerHud } from './ui/hud.js'; // Player HUD import
+import { initLeaderboard, updateLeaderboard } from './ui/leaderboard.js'; // Leaderboard import
 
 const CONFIG = {
   fpsLimit : 60,
@@ -37,6 +38,7 @@ scoreboardContainer = svg.append('g')
 // Positioning will be handled in resizeSvg initially and on resize events
 initScoreboard(scoreboardContainer, state.players);
 initHud(svg, state.players); // Initialize player HUD elements
+initLeaderboard(state.players); // Initialize leaderboard
 
 startDemoFeed();
 
@@ -70,6 +72,7 @@ d3.timer((now)=>{
   updateGlobalStatusDisplay(); // Renamed from updateHud
   updateScoreboard(state.players, scoreboardContainer);
   updatePlayerHud(state.players, combatEvents); // Update player HUD
+  updateLeaderboard(state.players); // Update leaderboard
 });
 
 function handleEvent(e){

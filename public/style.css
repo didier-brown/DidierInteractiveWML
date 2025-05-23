@@ -70,3 +70,50 @@ body {
   box-shadow: 0 2px 8px #0006;
   z-index: 10;
 }
+
+/* Leaderboard Styles */
+#leaderboard-container {
+  width: 80%;
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 15px;
+  background-color: var(--lane-bg, #181f2a);
+  border: 2px solid var(--lane-accent, #3a8dde);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px #0006;
+}
+
+#leaderboard-container h2 {
+  color: var(--lane-label, #fff);
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.8em;
+}
+
+#leaderboard-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#leaderboard-list li {
+  background-color: var(--score-pill, #222c3a);
+  color: var(--score-pill-text, #fff);
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  border-radius: 5px;
+  font-size: 1.1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease-in-out;
+}
+
+#leaderboard-list li:nth-child(odd) {
+  background-color: #2a3647; /* Slightly different for striping if desired */
+}
+
+#leaderboard-list li:hover {
+  background-color: var(--lane-accent, #3a8dde);
+}

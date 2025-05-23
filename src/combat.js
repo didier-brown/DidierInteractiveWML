@@ -128,7 +128,9 @@ export function combatStep(state, dt){
     const alivePlayers = state.players.filter(p => p.hp > 0);
     if (alivePlayers.length === 1) {
       const winner = alivePlayers[0];
+      const oldRoundWins = winner.roundWins;
       winner.roundWins++;
+      console.log(`Player ${winner.id} wins round. Round wins updated to ${winner.roundWins} (Previous: ${oldRoundWins})`);
       events.push({ type: 'roundEnd', winner: winner });
       // It's important that main.js handles this event to call startNewRound
       // or declare a game over. combatStep should not call startNewRound directly.
