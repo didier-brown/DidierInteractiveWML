@@ -120,22 +120,18 @@ function handleEvent(e){
 }
 
 function resizeSvg(){
-  const main = document.querySelector('main');
-  const newWidth = main.clientWidth;
-  const newHeight = main.clientHeight;
+  const availableWidth = document.body.clientWidth;
+  const newWidth = Math.max(300, availableWidth * 0.9);
+  const newHeight = newWidth / 2;
   
   svg.attr('width',  newWidth);
   svg.attr('height', newHeight);
 
   if (scoreboardContainer) {
-    // Position scoreboard, e.g., top-right. Adjust as needed.
-    const scoreboardWidth = 200; // Approximate width, can be dynamic if needed
+    const scoreboardWidth = 200;
     const scoreboardMargin = { top: 20, right: 20 };
     scoreboardContainer.attr('transform', `translate(${newWidth - scoreboardWidth - scoreboardMargin.right}, ${scoreboardMargin.top})`);
   }
-  // Note: If lanes or other elements need explicit resize handling based on newWidth/newHeight,
-  // they should be updated here or have their own resize handlers.
-  // For now, updateLanes is called in the timer loop, which might be sufficient if it re-calculates positions.
 }
 
 function startDemoFeed(){
